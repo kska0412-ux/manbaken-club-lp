@@ -7,9 +7,9 @@
   <link rel="icon" href="data:,">
   <style>
     :root {
-      --bg-primary: #CFF8D7;
+      --bg-primary: #DDF8C9;
       --card-bg: #FFFFFF;
-      --accent: #2EB872;
+      --accent: #16A34A;
       --text-primary: #2D3748;
       --text-secondary: #4A5568;
       --alert: #E53E3E;
@@ -340,7 +340,7 @@
           <div class="status" id="status">読込中</div>
         </div>
         <div class="preview-shell">
-          <iframe id="preview" title="競馬LPプレビュー" src="./index.html?editor=1"></iframe>
+          <iframe id="preview" title="競馬LPプレビュー" src="./index.html?editor=green-v2"></iframe>
         </div>
       </section>
     </main>
@@ -677,7 +677,7 @@
       preview.addEventListener('load', initializeEditor);
       saveButton.addEventListener('click', saveLp);
       reloadButton.addEventListener('click', function () {
-        preview.src = './index.html?editor=' + Date.now();
+        preview.src = './index.html?editor=green-v2-' + Date.now();
       });
 
       document.querySelectorAll('[data-width]').forEach(function (button) {
