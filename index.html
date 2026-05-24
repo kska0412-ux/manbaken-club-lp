@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="ja"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>競馬 LINE友だち追加LP</title>
+  <meta name="description" content="競馬の注目レース情報をLINEで受け取れるモバイルLPです。">
+  <link rel="icon" href="data:,">
+  <!-- GTM here -->
+  <style>
+    :root {
+      --bg-primary: #80F6FF;
+      --card-bg: #FFFFFF;
+      --accent: #4FD1C5;
+      --text-primary: #2D3748;
+      --text-secondary: #4A5568;
+      --alert: #E53E3E;
+      --cta-bg: #24D600;
+      --cta-hover: #1FB800;
+      --gold: #FFE45C;
+      --font: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-feature-settings: "palt";
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .page {
+      width: min(100%, 430px);
+      margin: 0 auto;
+      padding: 18px 16px 118px;
+    }
+
+    .hero {
+      padding: 10px 0 18px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--text-primary);
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .brand-title {
+      position: relative;
+      display: inline-block;
+      width: min(100%, 310px);
+      border: 3px solid var(--accent);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFF7B8 100%);
+      padding: 9px 13px 10px;
+      box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.78),
+        6px 7px 0 var(--accent),
+        0 14px 18px rgba(45, 55, 72, 0.16);
+      color: var(--text-primary);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.12;
+      text-align: center;
+      text-shadow: 2px 2px 0 var(--card-bg), 0 0 10px var(--gold);
+    }
+
+    .brand-title::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      right: 16px;
+      left: 16px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .hero-person {
+      margin: 0 auto 18px;
+      text-align: center;
+    }
+
+    .hero-icon-frame {
+      width: 164px;
+      height: 164px;
+      margin: 0 auto 8px;
+      overflow: hidden;
+      border: 4px solid var(--card-bg);
+      border-radius: 50%;
+      background: var(--card-bg);
+      outline: 2px solid var(--accent);
+    }
+
+    .hero-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 8%;
+      transform: scale(1.46);
+      transform-origin: 50% 10%;
+    }
+
+    .name-tag {
+      display: inline-block;
+      min-width: 94px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--card-bg);
+      padding: 4px 12px 5px;
+      color: var(--text-primary);
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .main-title {
+      margin: 0;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      color: var(--text-primary);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.36;
+      text-align: left;
+    }
+
+    .title-emphasis {
+      display: inline-block;
+      border-bottom: 3px solid var(--alert);
+      color: var(--text-primary);
+      font-size: 31px;
+      font-weight: 800;
+      line-height: 1.24;
+    }
+
+    .title-tail {
+      font-size: 27px;
+      font-weight: 800;
+      line-height: 1.38;
+    }
+
+    .lead {
+      margin: 18px 0 0;
+      color: var(--text-secondary);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.9;
+      text-align: left;
+    }
+
+    .lead strong {
+      color: var(--alert);
+      font-weight: 800;
+    }
+
+    .hero-cta {
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      justify-content: center;
+      margin: 18px auto 0;
+      border: 2px solid var(--cta-hover);
+      border-radius: 8px;
+      background: var(--cta-bg);
+      box-shadow: 0 7px 0 var(--cta-hover), 0 12px 18px rgba(31, 184, 0, 0.20);
+      color: var(--card-bg);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .br {
+      display: block;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .results {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .result-card {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--card-bg);
+      padding: 14px 12px 72px;
+    }
+
+    .result-card-title {
+      margin: 0 0 12px;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .meta-table,
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meta-table {
+      margin-bottom: 12px;
+      border: 1px solid var(--accent);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .meta-table th,
+    .meta-table td {
+      border: 1px solid var(--accent);
+      padding: 7px 2px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .meta-table th:nth-child(1),
+    .meta-table td:nth-child(1) {
+      width: 92px;
+    }
+
+    .meta-table th:nth-child(2),
+    .meta-table td:nth-child(2) {
+      width: 70px;
+    }
+
+    .meta-table th:nth-child(3),
+    .meta-table td:nth-child(3) {
+      width: 70px;
+    }
+
+    .meta-table th:nth-child(4),
+    .meta-table td:nth-child(4) {
+      width: 74px;
+    }
+
+    .meta-table th {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .meta-table td {
+      background: var(--card-bg);
+      font-weight: 800;
+    }
+
+    .date-band {
+      margin: 0 0 10px;
+      border: 1px solid var(--accent);
+      background: var(--bg-primary);
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .data-table {
+      border: 1px solid var(--accent);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .data-table th,
+    .data-table td {
+      border: 1px solid var(--accent);
+      padding: 7px 3px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .data-table th {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      background: var(--card-bg);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .data-table col:nth-child(1) {
+      width: 35px;
+    }
+
+    .data-table col:nth-child(2) {
+      width: 62px;
+    }
+
+    .data-table col:nth-child(3) {
+      width: 76px;
+    }
+
+    .hit-badge {
+      display: inline-block;
+      min-width: 36px;
+      border-radius: 4px;
+      background: var(--alert);
+      padding: 2px 5px;
+      color: var(--card-bg);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .payout {
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .payout-hit {
+      color: var(--alert);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .result-cta {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 2px solid var(--cta-hover);
+      background: var(--cta-bg);
+      box-shadow: 0 6px 0 var(--cta-hover);
+      color: var(--card-bg);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .result-cta:hover,
+    .result-cta:focus-visible,
+    .hero-cta:hover,
+    .hero-cta:focus-visible,
+    .fixed-cta-button:hover,
+    .fixed-cta-button:focus-visible {
+      background: var(--cta-hover);
+    }
+
+    .section {
+      margin-top: 22px;
+      border-radius: 8px;
+      background: var(--card-bg);
+      padding: 18px 14px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .promise-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .promise-list li {
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .promise-list strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .notice {
+      border: 2px solid var(--accent);
+      text-align: center;
+    }
+
+    .notice .section-title {
+      display: inline-block;
+      margin-right: auto;
+      margin-left: auto;
+      text-align: left;
+    }
+
+    .notice p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.85;
+      text-align: left;
+    }
+
+    .notice strong {
+      color: var(--alert);
+      font-weight: 800;
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding: 0 4px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .footer p {
+      margin: 0 0 8px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      text-decoration: underline;
+      text-decoration-color: var(--text-secondary);
+      text-underline-offset: 3px;
+    }
+
+    .fixed-cta {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 10px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .fixed-cta-inner {
+      width: min(100%, 430px);
+      margin: 0 auto;
+    }
+
+    .fixed-cta-button {
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 2px solid var(--cta-hover);
+      background: var(--cta-bg);
+      box-shadow: 0 7px 0 var(--cta-hover);
+      color: var(--card-bg);
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .result-cta:active,
+    .hero-cta:active,
+    .fixed-cta-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 var(--cta-hover);
+    }
+
+    @media (max-width: 374px) {
+      .page {
+        padding-right: 12px;
+        padding-left: 12px;
+      }
+
+      .main-title {
+        font-size: 26px;
+      }
+
+      .brand-title,
+      .title-emphasis {
+        font-size: 29px;
+      }
+
+      .hero-icon-frame {
+        width: 144px;
+        height: 144px;
+      }
+
+      .title-tail {
+        font-size: 25px;
+      }
+
+      .data-table {
+        font-size: 11px;
+      }
+
+      .payout-hit {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- GTM here -->
+  <main class="page">
+    <header class="hero">
+      <h2 class="eyebrow">
+        <span class="br brand-title" data-edit="eyebrow-1">万馬券クラブ</span>
+        <span class="br" data-edit="eyebrow-2"></span>
+      </h2>
+      <figure class="hero-person">
+        <div class="hero-icon-frame">
+          <img class="hero-icon" src="./assets/gambo.jpg" alt="ギャン坊の似顔絵アイコン" loading="lazy" width="152" height="152">
+        </div>
+        <figcaption class="name-tag">
+          <span class="br" data-edit="hero-name-1">🏇1日1善ギャンブル三昧🏇</span>
+          <span class="br" data-edit="hero-name">ギャン坊</span>
+        </figcaption>
+      </figure>
+      <h1 class="main-title">
+        <span class="br"><span class="title-emphasis" data-edit="main-title-1">競馬歴10年！</span></span>
+        <span class="br"><span class="title-emphasis" data-edit="main-title-2">最高配当200万越え！</span></span>
+        <span class="br title-tail" data-edit="main-title-3">競馬のプロがついに始動！！</span>
+      </h1>
+      <p class="lead">
+        <span class="br" data-edit="lead-1">平均日給10万円以上のギャン坊が</span>
+        <span class="br"><strong data-edit="lead-strong-1">クローズドなLINEで</strong></span>
+        <span class="br"><strong data-edit="lead-strong-2">少額からできる買い目をお届けします。</strong></span>
+        <span class="br" data-edit="lead-2"></span>
+      </p>
+      <a class="hero-cta" href="http://bit.ly/4nIN410" data-cv="line">
+        <span data-edit="cta-label">無料予想を見る</span>
+      </a>
+    </header>
+
+    <section class="results" aria-label="実績カード">
+      <article class="result-card" data-result-card="1">
+        <h2 class="result-card-title">
+          <span class="br" data-edit="result-title-1">サンプル実績 01</span>
+          <span class="br">回収額 <span class="nowrap" data-amount-1="">¥581,000</span></span>
+        </h2>
+        <table class="meta-table" aria-label="実績01 メタ情報">
+          <thead>
+            <tr>
+              <th scope="col">開催日</th>
+              <th scope="col">投票方法</th>
+              <th scope="col">競馬場</th>
+              <th scope="col">レース数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-result-date-1="">2026-05-23</td>
+              <td data-result-method-1="">3連単</td>
+              <td data-result-place-1="">東京</td>
+              <td data-result-race-1="">第8R</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="date-band"><span class="nowrap" data-date-band-1="">2026-05-23</span> 実績</p>
+        <table class="data-table" aria-label="実績01 データ">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">種別</th>
+              <th scope="col">購入金額</th>
+              <th scope="col">払戻金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>通常</td>
+              <td>¥8,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>通常</td>
+              <td>¥12,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td><span class="hit-badge">的中</span></td>
+              <td>¥10,000</td>
+              <td class="payout-hit" data-amount-1="">¥581,000</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>通常</td>
+              <td>¥9,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>05</td>
+              <td>通常</td>
+              <td>¥11,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+          </tbody>
+        </table>
+        <a class="result-cta" href="http://bit.ly/4nIN410" data-cv="line">
+          <span data-edit="cta-label">無料予想を見る</span>
+        </a>
+      </article>
+
+      <article class="result-card" data-result-card="2">
+        <h2 class="result-card-title">
+          <span class="br" data-edit="result-title-2">サンプル実績 02</span>
+          <span class="br">回収額 <span class="nowrap" data-amount-2="">¥420,000</span></span>
+        </h2>
+        <table class="meta-table" aria-label="実績02 メタ情報">
+          <thead>
+            <tr>
+              <th scope="col">開催日</th>
+              <th scope="col">投票方法</th>
+              <th scope="col">競馬場</th>
+              <th scope="col">レース数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-result-date-2="">2026-05-22</td>
+              <td data-result-method-2="">3連単</td>
+              <td data-result-place-2="">京都</td>
+              <td data-result-race-2="">第11R</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="date-band"><span class="nowrap" data-date-band-2="">2026-05-22</span> 実績</p>
+        <table class="data-table" aria-label="実績02 データ">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">種別</th>
+              <th scope="col">購入金額</th>
+              <th scope="col">払戻金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>通常</td>
+              <td>¥7,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>通常</td>
+              <td>¥9,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td><span class="hit-badge">的中</span></td>
+              <td>¥8,000</td>
+              <td class="payout-hit" data-amount-2="">¥420,000</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>通常</td>
+              <td>¥12,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>05</td>
+              <td>通常</td>
+              <td>¥10,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+          </tbody>
+        </table>
+        <a class="result-cta" href="http://bit.ly/4nIN410" data-cv="line">
+          <span data-edit="cta-label">無料予想を見る</span>
+        </a>
+      </article>
+
+      <article class="result-card" data-result-card="3">
+        <h2 class="result-card-title">
+          <span class="br" data-edit="result-title-3">サンプル実績 03</span>
+          <span class="br">回収額 <span class="nowrap" data-amount-3="">¥750,000</span></span>
+        </h2>
+        <table class="meta-table" aria-label="実績03 メタ情報">
+          <thead>
+            <tr>
+              <th scope="col">開催日</th>
+              <th scope="col">投票方法</th>
+              <th scope="col">競馬場</th>
+              <th scope="col">レース数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-result-date-3="">2026-05-21</td>
+              <td data-result-method-3="">3連単</td>
+              <td data-result-place-3="">阪神</td>
+              <td data-result-race-3="">第9R</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="date-band"><span class="nowrap" data-date-band-3="">2026-05-21</span> 実績</p>
+        <table class="data-table" aria-label="実績03 データ">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">種別</th>
+              <th scope="col">購入金額</th>
+              <th scope="col">払戻金額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>通常</td>
+              <td>¥10,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>通常</td>
+              <td>¥15,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td><span class="hit-badge">的中</span></td>
+              <td>¥12,000</td>
+              <td class="payout-hit" data-amount-3="">¥750,000</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>通常</td>
+              <td>¥9,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+            <tr>
+              <td>05</td>
+              <td>通常</td>
+              <td>¥11,000</td>
+              <td class="payout">¥0</td>
+            </tr>
+          </tbody>
+        </table>
+        <a class="result-cta" href="http://bit.ly/4nIN410" data-cv="line">
+          <span data-edit="cta-label">無料予想を見る</span>
+        </a>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="promise-title">
+      <h2 class="section-title" id="promise-title">
+        <span class="br" data-edit="promise-heading">3つのお約束</span>
+      </h2>
+      <ol class="promise-list">
+        <li>
+          <strong data-edit="promise-1-title">1. 毎日の無料買い目配信</strong>
+          <span class="br" data-edit="promise-1-line-1">競馬歴10年の視点で選んだ</span>
+          <span class="br" data-edit="promise-1-line-2">万馬券を狙える買い目をLINEで配信します。</span>
+        </li>
+        <li>
+          <strong data-edit="promise-2-title">2. 初心者の方にもできるように</strong>
+          <span class="br" data-edit="promise-2-line-1">買い目の見方や判断材料を</span>
+          <span class="br" data-edit="promise-2-line-2">短く簡潔にしてお届けします。</span>
+        </li>
+        <li>
+          <strong data-edit="promise-3-title">3. 配信後も相談しやすい体制</strong>
+          <span class="br" data-edit="promise-3-line-1">気になる点はLINE上で</span>
+          <span class="br" data-edit="promise-3-line-2">レクチャーしています。</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section notice" aria-labelledby="notice-title">
+      <h2 class="section-title" id="notice-title">
+        <span class="br" data-edit="notice-heading">⭐重要なお知らせ⭐</span>
+      </h2>
+      <p>
+        <span class="br" data-edit="notice-line-1">配信品質を保つため、</span>
+        <span class="br">今回の案内は<strong data-edit="notice-limit">限定50名</strong>を</span>
+        <span class="br" data-edit="notice-line-2">目安に受付しています。（残り12名）</span>
+        <span class="br" data-edit="notice-line-3">受付状況により、</span>
+        <span class="br" data-edit="notice-line-4">早めに締め切る場合があります。</span>
+      </p>
+    </section>
+
+    <footer class="footer">
+      <p>
+        <span class="br" data-edit="footer-note-1">個人の感想であり</span>
+        <span class="br" data-edit="footer-note-2">成果を保証するものではありません。</span>
+      </p>
+      <nav class="footer-links" aria-label="フッターリンク">
+        <a href="./legal.html">特定商取引法</a>
+        <a href="./privacy.html">プライバシーポリシー</a>
+      </nav>
+    </footer>
+  </main>
+
+  <div class="fixed-cta">
+    <div class="fixed-cta-inner">
+      <a class="fixed-cta-button" href="http://bit.ly/4nIN410" data-cv="line">
+        <span data-edit="cta-label">無料予想を見る</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var lineButtons = document.querySelectorAll('a[data-cv="line"]');
+
+      function setText(node, value) {
+        if (node && value !== undefined && value !== null) {
+          node.textContent = value;
+        }
+      }
+
+      function renderTypeCell(cell, row) {
+        if (!cell || !row) {
+          return;
+        }
+
+        cell.textContent = '';
+
+        if (row.hit) {
+          var badge = document.createElement('span');
+          badge.className = 'hit-badge';
+          badge.textContent = row.type || '的中';
+          cell.appendChild(badge);
+          return;
+        }
+
+        cell.textContent = row.type || '';
+      }
+
+      lineButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'line_friend_add');
+          }
+        });
+      });
+
+      window.updateResultData = function (results) {
+        Object.keys(results || {}).forEach(function (key) {
+          var item = results[key] || {};
+          var card = document.querySelector('[data-result-card="' + key + '"]');
+
+          if (!card) {
+            return;
+          }
+
+          if (item.amount) {
+            document.querySelectorAll('[data-amount-' + key + ']').forEach(function (node) {
+              node.textContent = item.amount;
+            });
+          }
+
+          if (item.date) {
+            document.querySelectorAll('[data-result-date-' + key + '], [data-date-band-' + key + ']').forEach(function (node) {
+              node.textContent = item.date;
+            });
+          }
+
+          if (item.method) {
+            document.querySelectorAll('[data-result-method-' + key + ']').forEach(function (node) {
+              node.textContent = item.method;
+            });
+          }
+
+          if (item.place) {
+            document.querySelectorAll('[data-result-place-' + key + ']').forEach(function (node) {
+              node.textContent = item.place;
+            });
+          }
+
+          if (item.race) {
+            document.querySelectorAll('[data-result-race-' + key + ']').forEach(function (node) {
+              node.textContent = item.race;
+            });
+          }
+
+          if (Array.isArray(item.rows)) {
+            card.querySelectorAll('.data-table tbody tr').forEach(function (rowNode, index) {
+              var row = item.rows[index];
+              var cells = rowNode.children;
+
+              if (!row || cells.length < 4) {
+                return;
+              }
+
+              setText(cells[0], row.no);
+              renderTypeCell(cells[1], row);
+              setText(cells[2], row.buy);
+              setText(cells[3], row.payout);
+              cells[3].className = row.hit ? 'payout-hit' : 'payout';
+            });
+          }
+        });
+      };
+    })();
+  </script>
+
+
+
+
+
+
+
+</body></html>

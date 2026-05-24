@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>競馬LP編集</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg-primary: #80F6FF;
+      --card-bg: #FFFFFF;
+      --accent: #4FD1C5;
+      --text-primary: #2D3748;
+      --text-secondary: #4A5568;
+      --alert: #E53E3E;
+      --cta-bg: #24D600;
+      --cta-hover: #1FB800;
+      --font: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--cta-bg);
+      color: var(--card-bg);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    button:hover,
+    button:focus-visible {
+      background: var(--cta-hover);
+    }
+
+    button.secondary {
+      border: 2px solid var(--accent);
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
+
+    button.secondary:hover,
+    button.secondary:focus-visible {
+      background: var(--bg-primary);
+    }
+
+    button:disabled {
+      background: var(--text-secondary);
+      cursor: not-allowed;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid var(--accent);
+      background: var(--card-bg);
+      padding: 12px 16px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .top-actions button {
+      padding: 0 14px;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(360px, 440px) 1fr;
+      min-height: 0;
+    }
+
+    .editor-pane {
+      overflow: auto;
+      border-right: 2px solid var(--accent);
+      background: var(--card-bg);
+      padding: 16px;
+    }
+
+    .preview-pane {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 16px;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .size-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-buttons button {
+      min-height: 38px;
+      padding: 0 12px;
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .status.alert {
+      color: var(--alert);
+    }
+
+    .panel {
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .field textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .result-editor {
+      display: grid;
+      gap: 10px;
+      border-top: 1px solid var(--accent);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .result-editor:first-child {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .result-editor h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .result-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .preview-shell {
+      overflow: auto;
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: var(--card-bg);
+      padding: 12px;
+    }
+
+    iframe {
+      width: 390px;
+      height: 844px;
+      border: 0;
+      background: var(--bg-primary);
+    }
+
+    @media (max-width: 900px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-pane {
+        border-right: 0;
+        border-bottom: 2px solid var(--accent);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .result-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-pane {
+        padding: 12px;
+      }
+
+      .preview-shell {
+        padding: 0;
+      }
+
+      iframe {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>競馬LP編集</h1>
+      <div class="top-actions">
+        <button type="button" id="saveButton">保存</button>
+        <button type="button" class="secondary" id="reloadButton">再読込</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="editor-pane" aria-label="編集フォーム">
+        <div class="panel">
+          <h2>基本</h2>
+          <div class="field-grid" id="basicFields"></div>
+        </div>
+
+        <div class="panel">
+          <h2>実績カード</h2>
+          <div id="resultFields"></div>
+        </div>
+
+        <div class="panel">
+          <h2>お約束</h2>
+          <div class="field-grid" id="promiseFields"></div>
+        </div>
+
+        <div class="panel">
+          <h2>重要なお知らせ</h2>
+          <div class="field-grid" id="noticeFields"></div>
+        </div>
+
+        <div class="panel">
+          <h2>CTAとフッター</h2>
+          <div class="field-grid" id="ctaFields"></div>
+        </div>
+      </section>
+
+      <section class="preview-pane" aria-label="LPプレビュー">
+        <div class="preview-toolbar">
+          <div class="size-buttons">
+            <button type="button" class="secondary" data-width="390">390</button>
+            <button type="button" class="secondary" data-width="430">430</button>
+          </div>
+          <div class="status" id="status">読込中</div>
+        </div>
+        <div class="preview-shell">
+          <iframe id="preview" title="競馬LPプレビュー" src="./index.html?editor=1"></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var preview = document.getElementById('preview');
+      var statusNode = document.getElementById('status');
+      var saveButton = document.getElementById('saveButton');
+      var reloadButton = document.getElementById('reloadButton');
+
+      var textGroups = {
+        basicFields: [
+          ['eyebrow-1', '肩書き 1行目'],
+          ['eyebrow-2', '肩書き 2行目'],
+          ['hero-name-1', '画像下の名札 1行目'],
+          ['hero-name', '画像下の名札 2行目'],
+          ['main-title-1', 'メイン 1行目'],
+          ['main-title-2', 'メイン 2行目'],
+          ['main-title-3', 'メイン 3行目'],
+          ['lead-1', 'リード 1行目'],
+          ['lead-strong-1', '赤字強調 1'],
+          ['lead-strong-2', '赤字強調 2'],
+          ['lead-2', 'リード 4行目']
+        ],
+        promiseFields: [
+          ['promise-heading', '見出し'],
+          ['promise-1-title', '約束1 タイトル'],
+          ['promise-1-line-1', '約束1 本文 1行目'],
+          ['promise-1-line-2', '約束1 本文 2行目'],
+          ['promise-2-title', '約束2 タイトル'],
+          ['promise-2-line-1', '約束2 本文 1行目'],
+          ['promise-2-line-2', '約束2 本文 2行目'],
+          ['promise-3-title', '約束3 タイトル'],
+          ['promise-3-line-1', '約束3 本文 1行目'],
+          ['promise-3-line-2', '約束3 本文 2行目']
+        ],
+        noticeFields: [
+          ['notice-heading', '見出し'],
+          ['notice-line-1', '本文 1行目'],
+          ['notice-limit', '限定数'],
+          ['notice-line-2', '本文 3行目'],
+          ['notice-line-3', '本文 4行目'],
+          ['notice-line-4', '本文 5行目']
+        ],
+        ctaFields: [
+          ['cta-label', 'CTA文言'],
+          ['footer-note-1', '注記 1行目'],
+          ['footer-note-2', '注記 2行目']
+        ]
+      };
+
+      function setStatus(message, isAlert) {
+        statusNode.textContent = message;
+        statusNode.classList.toggle('alert', Boolean(isAlert));
+      }
+
+      function previewDoc() {
+        return preview.contentDocument;
+      }
+
+      function readEditValue(key) {
+        var node = previewDoc().querySelector('[data-edit="' + key + '"]');
+        return node ? node.textContent.trim() : '';
+      }
+
+      function writeEditValue(key, value) {
+        previewDoc().querySelectorAll('[data-edit="' + key + '"]').forEach(function (node) {
+          node.textContent = value;
+        });
+        validateCopy();
+      }
+
+      function makeField(key, labelText, target) {
+        var wrap = document.createElement('div');
+        var label = document.createElement('label');
+        var input = document.createElement('input');
+
+        wrap.className = 'field';
+        label.htmlFor = key;
+        label.textContent = labelText;
+        input.id = key;
+        input.type = 'text';
+        input.value = readEditValue(key);
+        input.addEventListener('input', function () {
+          writeEditValue(key, input.value);
+        });
+
+        wrap.append(label, input);
+        target.append(wrap);
+      }
+
+      function renderTextFields() {
+        Object.keys(textGroups).forEach(function (groupId) {
+          var target = document.getElementById(groupId);
+          target.textContent = '';
+          textGroups[groupId].forEach(function (item) {
+            makeField(item[0], item[1], target);
+          });
+        });
+
+        var ctaTarget = document.getElementById('ctaFields');
+        var ctaUrl = document.createElement('div');
+        var ctaLabel = document.createElement('label');
+        var ctaInput = document.createElement('input');
+        var heroSrc = document.createElement('div');
+        var heroSrcLabel = document.createElement('label');
+        var heroSrcInput = document.createElement('input');
+        var heroAlt = document.createElement('div');
+        var heroAltLabel = document.createElement('label');
+        var heroAltInput = document.createElement('input');
+        var heroImage = previewDoc().querySelector('.hero-icon');
+
+        ctaUrl.className = 'field';
+        ctaLabel.htmlFor = 'cta-url';
+        ctaLabel.textContent = 'LINE URL';
+        ctaInput.id = 'cta-url';
+        ctaInput.type = 'url';
+        ctaInput.value = (previewDoc().querySelector('.result-cta') || {}).href || '';
+        ctaInput.addEventListener('input', function () {
+          previewDoc().querySelectorAll('a[data-cv="line"]').forEach(function (node) {
+            node.setAttribute('href', ctaInput.value);
+          });
+        });
+
+        heroSrc.className = 'field';
+        heroSrcLabel.htmlFor = 'hero-src';
+        heroSrcLabel.textContent = '円形アイコンURL';
+        heroSrcInput.id = 'hero-src';
+        heroSrcInput.type = 'url';
+        heroSrcInput.value = heroImage ? heroImage.getAttribute('src') : '';
+        heroSrcInput.addEventListener('input', function () {
+          if (heroImage) {
+            heroImage.setAttribute('src', heroSrcInput.value);
+          }
+        });
+
+        heroAlt.className = 'field';
+        heroAltLabel.htmlFor = 'hero-alt';
+        heroAltLabel.textContent = '円形アイコンalt';
+        heroAltInput.id = 'hero-alt';
+        heroAltInput.type = 'text';
+        heroAltInput.value = heroImage ? heroImage.getAttribute('alt') : '';
+        heroAltInput.addEventListener('input', function () {
+          if (heroImage) {
+            heroImage.setAttribute('alt', heroAltInput.value);
+          }
+        });
+
+        ctaUrl.append(ctaLabel, ctaInput);
+        heroSrc.append(heroSrcLabel, heroSrcInput);
+        heroAlt.append(heroAltLabel, heroAltInput);
+        ctaTarget.prepend(heroAlt);
+        ctaTarget.prepend(heroSrc);
+        ctaTarget.prepend(ctaUrl);
+      }
+
+      function resultValue(selector) {
+        var node = previewDoc().querySelector(selector);
+        return node ? node.textContent.trim() : '';
+      }
+
+      function makeResultField(labelText, value, onInput, wide) {
+        var wrap = document.createElement('div');
+        var label = document.createElement('label');
+        var input = document.createElement('input');
+
+        wrap.className = wide ? 'field wide' : 'field';
+        label.textContent = labelText;
+        input.type = 'text';
+        input.value = value;
+        input.addEventListener('input', function () {
+          onInput(input.value);
+          validateCopy();
+        });
+
+        wrap.append(label, input);
+        return wrap;
+      }
+
+      function renderResultFields() {
+        var target = document.getElementById('resultFields');
+        target.textContent = '';
+
+        [1, 2, 3].forEach(function (index) {
+          var block = document.createElement('section');
+          var heading = document.createElement('h3');
+          var grid = document.createElement('div');
+          var state = {
+            amount: resultValue('[data-amount-' + index + ']'),
+            date: resultValue('[data-result-date-' + index + ']'),
+            method: resultValue('[data-result-method-' + index + ']'),
+            place: resultValue('[data-result-place-' + index + ']'),
+            race: resultValue('[data-result-race-' + index + ']')
+          };
+
+          function applyResult() {
+            var payload = {};
+            payload[index] = state;
+            preview.contentWindow.updateResultData(payload);
+          }
+
+          block.className = 'result-editor';
+          heading.textContent = '実績 ' + index;
+          grid.className = 'result-fields';
+
+          grid.append(
+            makeResultField('カード見出し', readEditValue('result-title-' + index), function (value) {
+              writeEditValue('result-title-' + index, value);
+            }, true),
+            makeResultField('払戻金額', state.amount, function (value) {
+              state.amount = value;
+              applyResult();
+            }),
+            makeResultField('開催日', state.date, function (value) {
+              state.date = value;
+              applyResult();
+            }),
+            makeResultField('投票方法', state.method, function (value) {
+              state.method = value;
+              applyResult();
+            }),
+            makeResultField('競馬場', state.place, function (value) {
+              state.place = value;
+              applyResult();
+            }),
+            makeResultField('レース数', state.race, function (value) {
+              state.race = value;
+              applyResult();
+            })
+          );
+
+          block.append(heading, grid);
+          target.append(block);
+        });
+      }
+
+      function validateCopy() {
+        var bodyText = previewDoc().body ? previewDoc().body.innerText : '';
+        var hasRiskWord = /必ず|絶対|100%|必勝|確実|成果保証/.test(bodyText);
+
+        saveButton.disabled = hasRiskWord;
+        if (hasRiskWord) {
+          setStatus('断定・保証に見える表現が含まれています', true);
+          return false;
+        }
+
+        setStatus('編集中', false);
+        return true;
+      }
+
+      function currentHtml() {
+        return '<!doctype html>\n' + previewDoc().documentElement.outerHTML + '\n';
+      }
+
+      function initializeEditor() {
+        renderTextFields();
+        renderResultFields();
+        validateCopy();
+        setStatus('編集できます', false);
+      }
+
+      async function saveLp() {
+        if (!validateCopy()) {
+          return;
+        }
+
+        setStatus('保存中', false);
+        saveButton.disabled = true;
+
+        try {
+          var response = await fetch('/api/save-lp', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              html: currentHtml()
+            })
+          });
+          var result = await response.json();
+
+          if (!response.ok || !result.ok) {
+            throw new Error(result.error || '保存できませんでした');
+          }
+
+          setStatus('保存しました', false);
+        } catch (error) {
+          setStatus(error.message, true);
+        } finally {
+          validateCopy();
+        }
+      }
+
+      preview.addEventListener('load', initializeEditor);
+      saveButton.addEventListener('click', saveLp);
+      reloadButton.addEventListener('click', function () {
+        preview.src = './index.html?editor=' + Date.now();
+      });
+
+      document.querySelectorAll('[data-width]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          preview.style.width = button.getAttribute('data-width') + 'px';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
