@@ -597,6 +597,39 @@
         return '<!doctype html>\n' + previewDoc().documentElement.outerHTML + '\n';
       }
 
+      async function exportHtml(html) {
+        if ('showSaveFilePicker' in window) {
+          var handle = await window.showSaveFilePicker({
+            suggestedName: 'index.html',
+            types: [
+              {
+                description: 'HTML',
+                accept: {
+                  'text/html': ['.html']
+                }
+              }
+            ]
+          });
+          var writable = await handle.createWritable();
+          await writable.write(html);
+          await writable.close();
+          setStatus('HTMLを書き出しました', false);
+          return;
+        }
+
+        var blob = new Blob([html], {
+          type: 'text/html;charset=utf-8'
+        });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+
+        link.href = url;
+        link.download = 'index.html';
+        link.click();
+        URL.revokeObjectURL(url);
+        setStatus('HTMLを書き出しました', false);
+      }
+
       function initializeEditor() {
         renderTextFields();
         renderResultFields();
@@ -613,13 +646,14 @@
         saveButton.disabled = true;
 
         try {
+          var html = currentHtml();
           var response = await fetch('/api/save-lp', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              html: currentHtml()
+              html: html
             })
           });
           var result = await response.json();
@@ -630,7 +664,11 @@
 
           setStatus('保存しました', false);
         } catch (error) {
-          setStatus(error.message, true);
+          try {
+            await exportHtml(currentHtml());
+          } catch (exportError) {
+            setStatus(error.message, true);
+          }
         } finally {
           validateCopy();
         }
